@@ -1,4 +1,4 @@
-# **Document_Processing_Service (AsDocProc)**
+# **Document_Processing_Service (🦾🤖👍_AsDocProc)**
 
 **Микросервисная система асинхронной обработки и каталогизации документов.**
 
@@ -45,3 +45,11 @@
         ├── requirements.txt
         └── docker-compose.yml  
 ```
+
+---
+
+## 🧩 Общий сценарий
+Загрузка → Проверки → Нормализация → Парсинг → Хранение → Экспорт
+
+---
+
