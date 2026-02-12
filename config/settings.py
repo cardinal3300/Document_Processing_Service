@@ -1,5 +1,5 @@
 import os
-
+from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -136,6 +136,11 @@ CORS_ALLOWED_ORIGINS = [
     'https://read-and-write.example.com',
 ]
 
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=90),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+}
+
 CSRF_TRUSTED_ORIGINS = ['https://read-and-write.example.com', 'http://158.160.93.205']
 
 REDIS_URL = os.getenv('REDIS_URL')
@@ -148,3 +153,7 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
 CELERY_TIMEZONE = TIME_ZONE
+
+ENABLE_ANTIVIRUS = False
+DATA_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024

@@ -1,7 +1,7 @@
 from django.urls import path
-from documents.views import DocumentUploadView
 
+from documents.views import MultipleDocumentUploadView
 
 urlpatterns = [
-    path('upload/', DocumentUploadView.as_view(), name='document-upload'),
+    path('upload/', MultipleDocumentUploadView.as_view(), name='document-upload'),
 ]

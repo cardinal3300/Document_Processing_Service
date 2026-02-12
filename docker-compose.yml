@@ -1,0 +1,6 @@
+clamav:
+  image: clamav/clamav:latest
+  env_file: .env
+  ports:
+    - "3310:3310"
+    # Celery и backend будут подключаться к нему.

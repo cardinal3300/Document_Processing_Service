@@ -1,4 +1,5 @@
 import uuid
+
 from django.conf import settings
 from django.db import models
 
@@ -14,7 +15,7 @@ class Document(models.Model):
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    file = models.FileField(upload_to='uploads/%Y/%m/%d/')
+    files = models.FileField(upload_to='uploads/%Y/%m/%d/')
     result_file = models.FileField(
         upload_to='results/%Y/%m/%d/',
         null=True,

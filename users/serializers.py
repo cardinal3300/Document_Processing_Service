@@ -1,12 +1,13 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-
 User = get_user_model()
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
+    """Сериализатор регистрации пользователя."""
     password = serializers.CharField(write_only=True)
+
     class Meta:
         model = User
         fields = (
@@ -24,7 +25,10 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+
 class UserSerializer(serializers.ModelSerializer):
+    """Сериализатор пользователя."""
+
     class Meta:
         model = User
         exclude = ("password",)

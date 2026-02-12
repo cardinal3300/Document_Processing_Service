@@ -1,0 +1,3 @@
+libmagic1
+clamav
+clamav-daemon

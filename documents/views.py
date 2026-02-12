@@ -1,14 +1,28 @@
-from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
+from django.db import transaction
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
 
-from documents.models import Document
-from documents.serializers import DocumentUploadSerializer
+from documents.serializers import MultipleDocumentUploadSerializer
 
 
-class DocumentUploadView(generics.CreateAPIView):
+class MultipleDocumentUploadView(generics.GenericAPIView):
+    serializer_class = MultipleDocumentUploadSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
-    serializer_class = DocumentUploadSerializer
-    permission_classes = [IsAuthenticated]
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-    def perform_create(self, serializer):
-        document = serializer.save()
+        documents = serializer.save()
+
+        response_data = {
+            "documents": [
+                {
+                    "id": str(doc.id),
+                    "status": doc.status
+                }
+                for doc in documents
+            ]
+        }
+        return Response(response_data, status=status.HTTP_201_CREATED)
