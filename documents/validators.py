@@ -4,6 +4,7 @@ from django.conf import settings
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 MAX_TOTAL_SIZE = 45 * 1024 * 1024  # 45MB
 MAX_FILES_USER = 5
@@ -36,7 +37,7 @@ def validate_max_limits_user(file_list):
         total_size += file.size
 
     if total_size > MAX_TOTAL_SIZE:
-        raise ValidationError("Суммарный размер всех файлов превышает допустимый размер! Максимальный размер 45 MB.")
+        raise ValidationError('Суммарный размер всех файлов превышает допустимый размер! Максимальный размер 45 MB.')
     return file_list
 
 
