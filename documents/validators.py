@@ -1,9 +1,5 @@
-import magic
-import pyclamd
-from django.conf import settings
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-
 
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 MAX_TOTAL_SIZE = 45 * 1024 * 1024  # 45MB
@@ -40,31 +36,3 @@ def validate_max_limits_user(file_list):
         raise ValidationError('Суммарный размер всех файлов превышает допустимый размер! Максимальный размер 45 MB.')
     return file_list
 
-
-def validate_mime_type(files):
-    """Валидация типа."""
-    files.seek(0)
-    mime = magic.from_buffer(files.read(2048), mime=True)
-    files.seek(0)
-
-    if mime not in ALLOWED_MIME_TYPES:
-        raise ValidationError(f'Недопустимый MIME тип: {mime}')
-    return mime
-
-
-def validate_virus(files):
-    """Валидация вируса."""
-    if not getattr(settings, 'ENABLE_ANTIVIRUS', False):
-        return
-
-    try:
-        cd = pyclamd.ClamdUnixSocket()
-        files.seek(0)
-        result = cd.scan_stream(files.read())
-        files.seek(0)
-        if result:
-            raise ValidationError('Файл заражён вирусом!')
-
-    except Exception:
-        # если ClamAV недоступен — можно логировать
-        raise ValidationError('Антивирус недоступен.')

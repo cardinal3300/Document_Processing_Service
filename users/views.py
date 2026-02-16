@@ -4,7 +4,6 @@ from rest_framework.viewsets import ModelViewSet
 
 from users.serializers import UserRegisterSerializer, UserSerializer
 
-
 User = get_user_model()
 
 

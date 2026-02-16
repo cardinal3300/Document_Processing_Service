@@ -1,65 +1,44 @@
 from celery import shared_task
+from django.conf import settings
+from django.core.mail import send_mail
+
 from documents.models import Document
-from documents.services import (
-    detect_mime,
-    normalize_to_internal,
-    parse_document,
-    export_result, convert_to_target,
-)
 
 
-@shared_task(bind=True)
-def process_document(self, document_id: str):
-    """Полный pipeline обработки:
-    1. MIME проверка
-    2. Конвертация к внутреннему стандарту
-    3. Парсинг
-    4. Конвертация в выбранный формат
-    5. Обновление статуса
-    При ошибке:
-    → статус error
-    → сохраняется сообщение ошибки."""
-    if not document_id:
-        raise ValueError('document_id is required')
+@shared_task
+def notify_admin_new_documents(doc_ids: list[str]) -> None:
+    """Отправляет email администратору о новых загруженных документах."""
+    doc = Document.objects.filter(id__in=doc_ids)
+    count = doc.count()
 
-    document = Document.objects.get(id=document_id)
-    document.status = 'Processing'
-    document.save(update_fields=['status'])
+    file_list = '\n'.join([f'- {d.original_name} (ID: {d.id})' for d in doc])
 
+    send_mail(
+        subject=f'Новые документы: {count} шт. поступили на модерацию',
+        message=f'Пользователь загрузил пакет документов.\n\n'
+                f'Список файлов:\n{file_list}\n\n'
+                f'Проверьте их в админ-панели.',
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[settings.ADMIN_EMAIL],
+    )
+
+
+@shared_task
+def notify_user_document_status(doc_id):
+    """Отправляет пользователю уведомление о результате модерации."""
     try:
-        # --- 1. MIME проверка ---
-        mime = detect_mime(document)
-        document.mime_type = mime
-        document.save(update_fields=['mime_type'])
+        doc = Document.objects.select_related('owner').get(id=doc_id)
 
-        # --- 2. Внутренний стандарт ---
-        internal_path = normalize_to_internal(document)
-        document.internal_file.name = internal_path
-        document.save(update_fields=['internal_file'])
+        print(f"DEBUG: Отправка письма для {doc.id} на почту {doc.owner.email}")
 
-        # --- 3. Парсинг ---
-        parsed_data = parse_document(document)
-        document.parsed_data = parsed_data
-        document.save(update_fields=['parsed_data'])
-
-        # --- 4. Конвертация в выбранный формат ---
-        converted_path = convert_to_target(document)
-        if converted_path:
-            document.converted_file.name = converted_path
-
-        # --- 5. Экспорт ---
-        result_path = export_result(document)
-        if result_path:
-            document.result_file.name = result_path
-
-        # --- 6. Завершение ---
-        document.status = 'Completed'
-        document.save(update_fields=['status', 'result_file'])
-
+        send_mail(
+            subject=f'Обновление статуса документа #{doc.id}',
+            message=f'Здравствуйте! Статус вашего документа изменен на: {doc.get_status_display()}.',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[doc.owner.email],
+            fail_silently=False,
+        )
+    except Document.DoesNotExist:
+        print(f"DEBUG: Документ {doc_id} не найден")
     except Exception as e:
-        document.status = 'Error'
-        document.error_message = str(e)
-        document.save(update_fields=['status', 'error_message'])
-        raise
-
-    print(document.result_file.path)
+        print(f"DEBUG ERROR: {str(e)}")

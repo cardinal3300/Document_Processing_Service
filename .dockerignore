@@ -1,0 +1,10 @@
+**
+!config
+!documents
+!nginx
+!users
+!manage.py
+!Dockerfile
+!.flake8
+!requirements.txt
+!docker-compose.yml

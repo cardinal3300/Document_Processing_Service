@@ -1,3 +1,7 @@
-libmagic1
-clamav
-clamav-daemon
+FROM nginx:latest
+
+RUN rm -f /etc/nginx/conf.d/default.conf
+
+COPY nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 80

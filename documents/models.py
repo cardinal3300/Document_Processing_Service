@@ -1,61 +1,37 @@
 import uuid
 
-from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db import models
 
+User = get_user_model()
 
 class Document(models.Model):
-    """Модель документа."""
+    """Модель загруженного пользователем документа.
+    Пользователь загружает документ через API.
+    Администратор подтверждает или отклоняет его через Django admin.
+    После модерации пользователю отправляется email-уведомление."""
     STATUS_CHOICES = (
-        ('Pending', 'В ожидании'),
-        ('Processing', 'В процессе'),
-        ('Completed', 'Завершено'),
-        ('Error', 'Ошибка'),
-    )
-    TARGET_FORMAT_CHOICES = (
-        ('PDF', 'pdf'),
-        ('CSV', 'csv'),
-        ('XLSX', 'xlsx'),
+        ('Pending', 'На модерации'),
+        ('Approved', 'Подтверждён'),
+        ('Rejected', 'Отклонён'),
     )
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    batch_id = models.UUIDField(default=uuid.uuid4, db_index=True)
-    owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='documents',
-        null=True,
-        blank=True
-    )
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, verbose_name='ID документа')
+    batch_id = models.UUIDField(
+        db_index=True,
+        verbose_name='ID группы загрузки',
+        help_text='Общий UUID для пачки файлов, загруженных одним запросом.')
 
-    original_name = models.CharField(max_length=255)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Владелец')
 
-    files = models.FileField(upload_to='uploads/%Y/%m/%d/')
-    internal_file = models.FileField(upload_to='uploads/internal/', null=True, blank=True)
-    converted_file = models.FileField(upload_to='uploads/converted/', null=True, blank=True)
-    result_file = models.FileField(upload_to='results/%Y/%m/%d/', null=True, blank=True)
+    files = models.FileField(upload_to='uploads/%Y/%m/%d/', verbose_name='Файл')
+    original_name = models.CharField(max_length=255, verbose_name='Оригинальное имя файла')
+    size = models.PositiveBigIntegerField()
 
-    mime_type = models.CharField(max_length=100, blank=True)
-    size = models.PositiveBigIntegerField(help_text='Размер в байтах')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, db_index=True, verbose_name='Статус')
 
-    parsed_data = models.JSONField(null=True, blank=True)
-
-    target_format = models.CharField(
-        max_length=10,
-        choices=TARGET_FORMAT_CHOICES,
-        default='PDF',
-    )
-
-    status = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-        default='Pending'
-    )
-
-    error_message = models.TextField(null=True, blank=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата загрузки')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
 
     def __str__(self):
         return f'{self.original_name} ({self.status})'
@@ -63,4 +39,8 @@ class Document(models.Model):
     class Meta:
         verbose_name = 'документ'
         verbose_name_plural = 'документы'
-        ordering = ('-created_at',)
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['batch_id']),
+            models.Index(fields=['status']),
+        ]

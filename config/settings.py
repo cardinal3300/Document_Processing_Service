@@ -36,8 +36,8 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_extensions',
     'corsheaders',
-    'django_celery_beat',
     'drf_yasg',
 
     'documents',
@@ -119,9 +119,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'support@docservice.ru'
+ADMIN_EMAIL = 'boss@docservice.ru'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
@@ -155,6 +158,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 
 CELERY_TIMEZONE = TIME_ZONE
 
-ENABLE_ANTIVIRUS = False
+ENABLE_ANTIVIRUS = True
+
 DATA_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024
