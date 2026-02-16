@@ -1,7 +1,6 @@
 from django.urls import path
 
-from documents.views import MultipleDocumentUploadView, DocumentDetailView
-
+from documents.views import DocumentDetailView, MultipleDocumentUploadView
 
 app_name = 'documents'
 

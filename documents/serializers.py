@@ -6,7 +6,8 @@ from rest_framework import serializers
 
 from documents.models import Document
 from documents.tasks import notify_admin_new_documents
-from documents.validators import validate_max_files_user, validate_max_limits_user
+from documents.validators import (validate_max_files_user,
+                                  validate_max_limits_user)
 
 
 class MultipleDocumentUploadSerializer(serializers.Serializer):

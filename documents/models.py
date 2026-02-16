@@ -5,6 +5,7 @@ from django.db import models
 
 User = get_user_model()
 
+
 class Document(models.Model):
     """Модель загруженного пользователем документа.
     Пользователь загружает документ через API.

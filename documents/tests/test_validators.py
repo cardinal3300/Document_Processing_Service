@@ -2,7 +2,8 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.exceptions import ValidationError
 
-from documents.validators import validate_max_files_user, validate_max_limits_user
+from documents.validators import (validate_max_files_user,
+                                  validate_max_limits_user)
 
 
 @pytest.mark.django_db

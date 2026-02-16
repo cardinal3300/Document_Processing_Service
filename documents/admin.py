@@ -22,9 +22,9 @@ class DocumentAdmin(admin.ModelAdmin):
     # Кнопки быстрых действий (Actions)
     actions = ['approve_docs', 'reject_docs']
 
-
     # 🔹 Кликабельная ссылка в списке
     def file_link(self, obj):
+
         if obj.files:
             return format_html(
                 '<a href="{}" target="_blank" style="font-weight: bold;">Открыть файл</a>',
@@ -34,9 +34,9 @@ class DocumentAdmin(admin.ModelAdmin):
 
     file_link.short_description = 'Ссылка на файл'
 
-
     # 🔹 Просмотр файла внутри карточки
     def file_preview(self, obj):
+
         if obj.files:
             return format_html(
                 '<a href="{}" target="_blank" style="font-weight: bold;">📂Скачать документ</a>',
@@ -45,7 +45,6 @@ class DocumentAdmin(admin.ModelAdmin):
         return 'Нет файла'
 
     file_preview.short_description = 'Документ'
-
 
     @admin.action(description='✅ Подтвердить выбранные документы')
     def approve_docs(self, request, queryset):
@@ -58,7 +57,6 @@ class DocumentAdmin(admin.ModelAdmin):
             )
 
         self.message_user(request, f'Подтверждено документов: {queryset.count()}')
-
 
     @admin.action(description='❌ Отклонить выбранные документы')
     def reject_docs(self, request, queryset):

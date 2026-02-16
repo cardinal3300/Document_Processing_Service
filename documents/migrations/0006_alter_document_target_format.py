@@ -13,6 +13,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='document',
             name='target_format',
-            field=models.CharField(choices=[('PDF', 'pdf'), ('CSV', 'csv'), ('XLSX', 'xlsx')], default='PDF', max_length=10),
+            field=models.CharField(choices=[('PDF', 'pdf'), ('CSV', 'csv'), ('XLSX', 'xlsx')],
+                                   default='PDF', max_length=10),
         ),
     ]

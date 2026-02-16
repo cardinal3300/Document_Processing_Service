@@ -1,10 +1,10 @@
-from django.conf import settings
 from django.db import transaction
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 
 from documents.models import Document
-from documents.serializers import MultipleDocumentUploadSerializer, DocumentDetailSerializer
+from documents.serializers import (DocumentDetailSerializer,
+                                   MultipleDocumentUploadSerializer)
 from documents.tasks import notify_admin_new_documents
 
 

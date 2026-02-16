@@ -56,7 +56,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='document',
             name='owner',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                    to=settings.AUTH_USER_MODEL),
         ),
         migrations.AlterField(
             model_name='document',
@@ -66,6 +67,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='document',
             name='status',
-            field=models.CharField(choices=[('Pending', 'В ожидании'), ('Processing', 'В процессе'), ('Completed', 'Завершено'), ('Error', 'Ошибка')], max_length=20),
+            field=models.CharField(choices=[('Pending', 'В ожидании'), ('Processing', 'В процессе'),
+                                            ('Completed', 'Завершено'), ('Error', 'Ошибка')], max_length=20),
         ),
     ]

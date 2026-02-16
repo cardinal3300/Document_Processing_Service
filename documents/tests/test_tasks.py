@@ -1,9 +1,11 @@
-import pytest
 from unittest.mock import patch
-from django.contrib.auth import get_user_model
-from documents.models import Document
-from documents.tasks import notify_admin_new_documents, notify_user_document_status
 
+import pytest
+from django.contrib.auth import get_user_model
+
+from documents.models import Document
+from documents.tasks import (notify_admin_new_documents,
+                             notify_user_document_status)
 
 User = get_user_model()
 
@@ -37,6 +39,7 @@ def test_notify_admin_new_documents(mock_send_mail, settings):
 
     assert 'Новые документы' in kwargs['subject']
     assert kwargs["recipient_list"] == ['admin@test.com']
+
 
 @pytest.mark.django_db
 @patch('documents.tasks.send_mail')
