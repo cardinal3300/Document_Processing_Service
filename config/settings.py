@@ -20,7 +20,7 @@ DEBUG = os.getenv('DEBUG') == 'True'
 
 AUTH_USER_MODEL = 'users.User'
 
-ALLOWED_HOSTS = ['158.160.95.95', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['158.160.92.51', 'localhost', '127.0.0.1']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
