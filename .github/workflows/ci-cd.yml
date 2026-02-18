@@ -21,11 +21,11 @@ jobs:
     services:
       redis:
         image: redis:7
-        ports: ["6379:6379"]
+        ports: ['6379:6379']
 
       postgres:
         image: postgres:16
-        ports: ["5432:5432"]
+        ports: ['5432:5432']
         env:
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
@@ -94,7 +94,7 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY_DPS }}
-          source: "config,documents,nginx,users,manage.py,Dockerfile,requirements.txt,docker-compose.yml"
+          source: 'config,documents,nginx,users,manage.py,Dockerfile,requirements.txt,docker-compose.yml'
           target: /opt/acdocproc/
 
       - name: Deploy to server
