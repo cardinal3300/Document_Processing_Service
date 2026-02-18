@@ -14,10 +14,10 @@ class DocumentAdmin(admin.ModelAdmin):
         - подтверждать документы
         - отклонять документы
         - автоматически уведомлять пользователя."""
-    list_display = ('id', 'owner', 'status', 'file_link', 'created_at')
+    list_display = ('batch_id', 'owner', 'status', 'file_link', 'created_at')
     list_filter = ('status', 'created_at')
     search_fields = ('owner__username', 'id')
-    readonly_fields = ('file_preview', 'created_at')
+    readonly_fields = ('created_at',)
 
     # Кнопки быстрых действий (Actions)
     actions = ['approve_docs', 'reject_docs']
@@ -27,24 +27,12 @@ class DocumentAdmin(admin.ModelAdmin):
 
         if obj.files:
             return format_html(
-                '<a href="{}" target="_blank" style="font-weight: bold;">Открыть файл</a>',
+                '<a href="{}" target="_blank" style="font-weight: bold;">Скачать файл</a>',
                 obj.files.url
             )
         return 'Нет файла'
 
     file_link.short_description = 'Ссылка на файл'
-
-    # 🔹 Просмотр файла внутри карточки
-    def file_preview(self, obj):
-
-        if obj.files:
-            return format_html(
-                '<a href="{}" target="_blank" style="font-weight: bold;">📂Скачать документ</a>',
-                obj.files.url
-            )
-        return 'Нет файла'
-
-    file_preview.short_description = 'Документ'
 
     @admin.action(description='✅ Подтвердить выбранные документы')
     def approve_docs(self, request, queryset):

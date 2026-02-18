@@ -11,6 +11,12 @@ User = get_user_model()
 
 
 @pytest.mark.django_db
+def test_notify_admin_no_documents():
+    result = notify_admin_new_documents([])
+    assert result == 'Не нашлось документов'
+
+
+@pytest.mark.django_db
 @patch('documents.tasks.send_mail')
 def test_notify_admin_new_documents(mock_send_mail, settings):
     """Проверяем, что при вызове задачи

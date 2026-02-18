@@ -1,6 +1,5 @@
 import uuid
 
-from django.conf import settings
 from django.db import transaction
 from rest_framework import serializers
 
@@ -48,10 +47,7 @@ class MultipleDocumentUploadSerializer(serializers.Serializer):
             documents.append(document)
 
         # Уведомление администратора через Celery
-        notify_admin_new_documents.delay(
-            [str(doc.id) for doc in documents],
-            settings.ADMIN_EMAIL
-        )
+        notify_admin_new_documents.delay([str(doc.id) for doc in documents])
         return documents
 
 
