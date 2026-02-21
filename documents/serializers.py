@@ -53,7 +53,7 @@ class DocumentDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Document
-        fields = (
+        read_only_fields = (
             'id',
             'batch_id',
             'original_name',
@@ -61,4 +61,3 @@ class DocumentDetailSerializer(serializers.ModelSerializer):
             'status',
             'created_at',
         )
-        read_only_fields = fields
