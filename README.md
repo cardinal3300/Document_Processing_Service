@@ -6,7 +6,7 @@
 
 ## 🎯 **Цель проекта**
 
-Проектирование и разработка программного обеспечения для автоматизации процессов загрузки, анализа и преобразования файлов различных форматов с использованием асинхронных очередей задач для обеспечения высокой доступности системы.
+Проектирование и разработка программного обеспечения для автоматизации процессов загрузки, анализа и обработки загружаемых документов с использованием асинхронных очередей задач для обеспечения высокой доступности системы.
 
 ---
 
@@ -55,6 +55,8 @@
 - Поддержка multipart/form-data
 
 - Автоматическая группировка в batch_id
+
+- Создание UUID уникального идетнификационного номера
 
 ### 🔎 Валидация
 
@@ -106,91 +108,91 @@
 
 ### 📖 API Документация
 
-Swagger: /swagger/
+    Swagger: /swagger/
 
-ReDoc: /redoc/
+    ReDoc: /redoc/
 
 ---
 
 ### 🏗 Архитектура
 
-    config/
-    documents/
-    users/
+- Python 3.14
+- Django - обработка HTTP запросов
+- PostgreSQL - хранение данных
+- Django REST Framework - API
+- Celery - ассинхронные задачи
+- Redis - брокер сообщений
+- Docker - контейнеризация
+- CI/CD - методология автоматизации
+- drf-yasg (Swagger) - документация
+- Pytest - тестирование
 
-### ⚙️ Установка и запуск
+### ⚙️ Клонирование
 
-    🔹 1. Клонирование
-    git clone <repo_url>
-    cd AcDocProc
+`git clone git@github.com:cardinal3300/Document_Processing_Service.git`
 
 ### 🐳 Запуск через Docker (рекомендуется)
 
-    ▶ Запуск
-    docker compose up --build
+`docker compose up -d --build`
 
 ### ▶ Применить миграции
 
-    docker compose exec web python manage.py migrate
+`docker compose exec backend python manage.py migrate`
 
 ### ▶ Создать суперпользователя
-docker compose exec web python manage.py createsuperuser
+
+`docker compose exec backend python manage.py createsuperuser`
 
 ### 📍 Сервис будет доступен:
 
-    API → http://localhost:8000/api/
+    API → http://localhost:80/api/
     
-    Swagger → http://localhost:8000/swagger/
+    Swagger → http://localhost:80/swagger/
     
-    Admin → http://localhost:8000/admin/
+    Admin → http://localhost:80/admin/
 
 ---
 
 ## 📊 Статусы документа
 
-- Pending — ожидает проверки
+- Pending — На модерации
 
-- Approved — одобрен
+- Approved — Подтверждён
 
-- Rejected — отклонён
-
----
-
-## 🧠 Технологии
-
-- Python 3.12
-
-- Django
-
-- Django REST Framework
-
-- Celery
-
-- Redis
-
-- PostgreSQL
-
-- Docker
-
-- drf-yasg (Swagger)
-
-- Pytest
+- Rejected — Отклонён
 
 ---
 
 ## 🏁 Happy Path
 
-1. Пользователь регистрируется
-
-2. Загружает документы
-
-3. Администратор получает email
-
-4. Администратор меняет статус
-
-5. Пользователь получает email
-
-6. Документ хранится в системе
+```aderno
+Регистрация (Simple_JWT)
+        │
+        ▼
+Пользователь
+        │
+        ▼
+POST /api/upload/
+        │
+        ▼
+Создание UUID / batch_id
+        │
+        ▼
+Сохранение документов 'Pending' = "На модерации"
+        │
+        ▼
+Celery → Email админу
+        │
+        ▼
+Администратор (Django Admin)
+        │
+        ├── 'Approve' → статус = "Подтверждён"
+        │
+        ├── 'Reject' → статус = "Отклонён"
+        │
+        ▼
+Celery → Email пользователю
+```
 
 ## 🧩 Покрытие тестами
 

@@ -14,7 +14,7 @@ class DocumentAdmin(admin.ModelAdmin):
         - подтверждать документы
         - отклонять документы
         - автоматически уведомлять пользователя."""
-    list_display = ('batch_id', 'owner', 'status', 'file_link', 'created_at')
+    list_display = ('id', 'owner', 'status', 'file_link', 'created_at')
     list_filter = ('status', 'created_at')
     search_fields = ('owner__username', 'id')
     readonly_fields = ('created_at',)

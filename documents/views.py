@@ -22,8 +22,8 @@ class MultipleDocumentUploadView(generics.GenericAPIView):
         documents = serializer.save()
         batch_id = documents[0].batch_id
 
-        doc_ids = [doc.id for doc in documents]
-        notify_admin_new_documents.delay(doc_ids)
+        # Уведомление администратора через Celery
+        notify_admin_new_documents.delay([str(doc.id) for doc in documents])
 
         return Response({
             'batch_id': str(batch_id),

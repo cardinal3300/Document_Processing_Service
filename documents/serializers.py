@@ -45,9 +45,6 @@ class MultipleDocumentUploadSerializer(serializers.Serializer):
                 status='Pending'
             )
             documents.append(document)
-
-        # Уведомление администратора через Celery
-        notify_admin_new_documents.delay([str(doc.id) for doc in documents])
         return documents
 
 
@@ -56,7 +53,7 @@ class DocumentDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Document
-        fields = (
+        read_only_fields = (
             'id',
             'batch_id',
             'original_name',
@@ -64,4 +61,3 @@ class DocumentDetailSerializer(serializers.ModelSerializer):
             'status',
             'created_at',
         )
-        read_only_fields = fields
