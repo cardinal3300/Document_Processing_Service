@@ -1,0 +1,96 @@
+name: AcDocProc
+
+services:
+  db:
+    image: postgres:16
+    restart: always
+    env_file: .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    expose:
+      - '5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
+  migrate:
+    build: .
+    command: python manage.py migrate
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+    depends_on:
+      db:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+              sh -c 'python manage.py collectstatic --no-input &&
+              gunicorn config.wsgi:application --bind 0.0.0.0:8000'
+    expose:
+      - '8000'
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+      REDIS_URL: redis://redis:6379/2
+    volumes:
+      - media_volume:/app/media
+      - static_volume:/app/static
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:8000/api || exit 1']
+      interval: 8s
+      timeout: 8s
+      retries: 3
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  redis:
+    image: redis:7
+    volumes:
+      - redis_data:/data
+    expose:
+      - '6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 3s
+      timeout: 3s
+      retries: 3
+
+  celery:
+    build: .
+    command: celery -A config worker -l info -P solo
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+      REDIS_URL: redis://redis:6379/2
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  nginx:
+    build: ./nginx
+    restart: always
+    ports:
+      - '80:80'
+    volumes:
+      - media_volume:/app/media
+      - static_volume:/app/static
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
+  static_volume:
+  media_volume:
