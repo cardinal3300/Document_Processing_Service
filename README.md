@@ -1,18 +1,16 @@
-# **Сервис обработки загружаемых документов (AcDocProc)**
+# Сервис обработки загружаемых документов (AcDocProc)
 
-**Микросервисная система асинхронной обработки и каталогизации документов.**
-
----
-
-## 🎯 **Цель проекта**
-
-Проектирование и разработка программного обеспечения для автоматизации процессов загрузки, анализа и преобразования файлов различных форматов с использованием асинхронных очередей задач для обеспечения высокой доступности системы.
+Микросервисная система асинхронной обработки и каталогизации документов.
 
 ---
 
-## 📂 **Структура проекта**
+## 🎯 Цель проекта
 
-```arduino
+Проектирование и разработка программного обеспечения для автоматизации процессов загрузки, анализа и обработки загружаемых документов с использованием асинхронных очередей задач для обеспечения высокой доступности системы.
+
+---
+
+## 📂 Структура проекта
     AcDocProc/
         ├── .github/
         │       └── workflows/               
@@ -43,11 +41,11 @@
         ├── .flake8
         ├── requirements.txt
         └── docker-compose.yml  
-```
 
 ---
 
 ## 🧩 Общий сценарий
+
 ### 📤 Загрузка документов
 
 - Авторизованный пользователь может загрузить один или несколько файлов
@@ -55,6 +53,8 @@
 - Поддержка multipart/form-data
 
 - Автоматическая группировка в batch_id
+
+- Создание UUID уникального идетнификационного номера
 
 ### 🔎 Валидация
 
@@ -98,99 +98,100 @@
 
 Отправляются автоматически:
 
-```ardeno
     Событие  	        Кому	        Когда
     Загрузка документа	Администратору	После успешной загрузки
     Изменение статуса	Пользователю	После изменения в админке
-```
 
 ### 📖 API Документация
 
-Swagger: /swagger/
+    Swagger: /swagger/
 
-ReDoc: /redoc/
+    ReDoc: /redoc/
 
 ---
 
-### 🏗 Архитектура
+## 🏗 Архитектура
 
-    config/
-    documents/
-    users/
+    Python 3.14
+    Django - обработка HTTP запросов
+    PostgreSQL - хранение данных
+    Django REST Framework - API
+    Celery - ассинхронные задачи
+    Redis - брокер сообщений
+    Docker - контейнеризация
+    CI/CD - методология автоматизации
+    drf-yasg (Swagger) - документация
+    Pytest - тестирование
 
-### ⚙️ Установка и запуск
+---
 
-    🔹 1. Клонирование
-    git clone <repo_url>
-    cd AcDocProc
+## ⚙️ Клонирование
 
-### 🐳 Запуск через Docker (рекомендуется)
+    git clone git@github.com:cardinal3300/Document_Processing_Service.git
 
-    ▶ Запуск
-    docker compose up --build
+---
+
+## 🐳 Запуск через Docker (рекомендуется)
+    docker compose up -d --build
 
 ### ▶ Применить миграции
 
-    docker compose exec web python manage.py migrate
+    docker compose exec backend python manage.py migrate
 
 ### ▶ Создать суперпользователя
-docker compose exec web python manage.py createsuperuser
+
+    docker compose exec backend python manage.py createsuperuser
 
 ### 📍 Сервис будет доступен:
 
-    API → http://localhost:8000/api/
-    
-    Swagger → http://localhost:8000/swagger/
-    
-    Admin → http://localhost:8000/admin/
+    API → http://localhost:80/api/
+
+    Swagger → http://localhost:80/swagger/
+
+    Admin → http://localhost:80/admin/
 
 ---
 
 ## 📊 Статусы документа
 
-- Pending — ожидает проверки
+- Pending — На модерации
 
-- Approved — одобрен
+- Approved — Подтверждён
 
-- Rejected — отклонён
-
----
-
-## 🧠 Технологии
-
-- Python 3.12
-
-- Django
-
-- Django REST Framework
-
-- Celery
-
-- Redis
-
-- PostgreSQL
-
-- Docker
-
-- drf-yasg (Swagger)
-
-- Pytest
+- Rejected — Отклонён
 
 ---
 
 ## 🏁 Happy Path
 
-1. Пользователь регистрируется
+    Регистрация (Simple_JWT)
+            │
+            ▼
+    Пользователь
+            │
+            ▼
+    POST /api/upload/
+            │
+            ▼
+    Создание UUID / batch_id
+            │
+            ▼
+    Сохранение документов 'Pending' = "На модерации"
+            │
+            ▼
+    Celery → Email админу
+            │
+            ▼
+    Администратор (Django Admin)
+            │
+            ├── 'Approve' → статус = "Подтверждён"
+            │
+            ├── 'Reject' → статус = "Отклонён"
+            │
+            ▼
+    Celery → Email пользователю
 
-2. Загружает документы
-
-3. Администратор получает email
-
-4. Администратор меняет статус
-
-5. Пользователь получает email
-
-6. Документ хранится в системе
+---
 
 ## 🧩 Покрытие тестами
 
@@ -206,9 +207,10 @@ docker compose exec web python manage.py createsuperuser
 
 - Сервисы
 
+---
+
 ## 👨‍💻 Автор
 
-Igor Zherdev
-
-Backend Developer
-
+    Igor Zherdev
+    
+    Backend Developer
