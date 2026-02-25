@@ -1,6 +1,9 @@
 name: AcDocProc
 
-on: [push]
+on:
+  pull_request:
+    branches:
+      - main
 
 jobs:
   lint:
@@ -99,12 +102,12 @@ jobs:
 
       - name: Deploy to server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'    
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
             cd /opt/acdocproc
             IMAGE_TAG=${GITHUB_SHA}
             docker compose pull
             docker compose up -d --build
             docker compose exec -T backend python manage.py migrate --noinput
-            docker compose exec -T backend python manage.py collectstatic --noinput            
+            docker compose exec -T backend python manage.py collectstatic --noinput
             docker image prune -f
           EOF
