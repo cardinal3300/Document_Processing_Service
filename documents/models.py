@@ -28,6 +28,7 @@ class Document(models.Model):
     files = models.FileField(upload_to='uploads/%Y/%m/%d/', verbose_name='Файл')
     original_name = models.CharField(max_length=255, verbose_name='Оригинальное имя файла')
     size = models.PositiveBigIntegerField()
+    mime_type = models.CharField(max_length=100, null=True, blank=True, verbose_name='Mime тип')
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, db_index=True, verbose_name='Статус')
 

@@ -34,6 +34,7 @@ class MultipleDocumentUploadView(generics.GenericAPIView):
                     'id': str(doc.id),
                     'status': doc.status,
                     'name': doc.original_name,
+                    'mime_type': doc.mime_type,
                     'created': doc.created_at,
                 }
                 for doc in documents
@@ -61,6 +62,7 @@ class DocumentDetailView(generics.GenericAPIView):
                     'id': str(doc.id),
                     'status': doc.status,
                     'name': doc.original_name,
+                    'mime_type': doc.mime_type,
                     'created': doc.created_at,
                 }
                 for doc in documents
