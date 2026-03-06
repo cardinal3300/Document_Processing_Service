@@ -1,12 +1,11 @@
-import magic
-import pyclamd
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
+from django.core.exceptions import ValidationError
 
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 MAX_TOTAL_SIZE = 45 * 1024 * 1024  # 45MB
 MAX_FILES_USER = 5
 
+ALLOWED_EXTENSIONS = {'.pdf', '.jpg', '.jpeg', '.png', '.doc', '.docx'}
 ALLOWED_MIME_TYPES = {
     'application/pdf',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',  # docx
@@ -39,25 +38,14 @@ def validate_max_limits_user(file_list):
     return file_list
 
 
-def validate_mime_type(file):
-    file.seek(0)
-    mime = magic.from_buffer(file.read(2048), mime=True)
-    file.seek(0)
+def validate_file_type(file):
+    # Проверка расширения
+    ext = "." + file.name.split(".")[-1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise ValidationError(f'Недопустимое расширение файла: {ext}')
 
-    if mime not in ALLOWED_MIME_TYPES:
-        raise ValidationError(f"Недопустимый MIME тип: {mime}")
-    return mime
-
-
-def validate_virus(file):
-    try:
-        cd = pyclamd.ClamdUnixSocket()
-        file.seek(0)
-        result = cd.scan_stream(file.read())
-        file.seek(0)
-
-        if result:
-            raise ValidationError("Файл заражён вирусом.")
-    except Exception:
-        # если ClamAV недоступен — можно логировать
-        raise ValidationError("Антивирус недоступен.")
+    # Проверка content-type
+    if file.content_type not in ALLOWED_MIME_TYPES:
+        raise ValidationError(
+            f'Недопустимый MIME тип: {file.content_type}'
+        )

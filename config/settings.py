@@ -1,4 +1,5 @@
 import os
+import socket
 from datetime import timedelta
 from pathlib import Path
 
@@ -20,7 +21,9 @@ DEBUG = os.getenv('DEBUG') == 'True'
 
 AUTH_USER_MODEL = 'users.User'
 
-ALLOWED_HOSTS = ['158.160.92.51', 'localhost', '127.0.0.1']
+hostname = socket.gethostname()
+local_ip = socket.gethostbyname(hostname)
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', local_ip]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
